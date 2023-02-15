@@ -1,7 +1,7 @@
 import './App.css';
 import { styled } from '@stitches/react';
 import { fourLetterWords } from './data/four-letter-words'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 /* Styled Components */
 
@@ -30,20 +30,59 @@ const SubmitButton = styled('button', {
 
 })
 
-
-// TODO: save chosen word in storage?
-// make input for guess word
-// limit to four chars
-// write logic to compare guess word and secret word
-
 function App() {
-  const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
-  const word = fourLetterWords[randomIndex]
+  
+  const [secret, setSecret] = useState('')
   const [guess, setGuess] = useState('')
+  const [message, setMessage] = useState('')
+
+  const compareWords = (s1, s2) => {
+    const s1Letters = {}
+    let exactMatch = 0
+    let closeMatch = 0
+  
+    if(s1 === s2) {
+      setMessage(`Correct! Secret word is ${s1}`)
+    } else {
+  
+      
+      for (let i = 0; i < s1.length; i++) {
+        let letter = s1[i]
+  
+        if (!(letter in s1Letters)) {
+          s1Letters[letter] = 0
+        }
+        s1Letters[letter]++
+        
+        if (letter === s2[i]) {
+          exactMatch++
+      }
+    }
+  
+    for(let i = 0; i < s2.length; i++) {
+      if (s1[i] !== s2[i] && s1Letters[s2[i]] > 0) {
+        closeMatch++
+        s1Letters[s2[i]]--
+      }
+    }
+    
+    setMessage(`Right letter, right place: ${exactMatch}\nRight letter, wrong place: ${closeMatch}`)
+  }
+  }
+
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
+    const word = fourLetterWords[randomIndex]
+    setSecret(word)
+  }, [])
+
+
 
   const handleClick = () => {
     if (guess.length === 4) {
+      guess.toUpperCase()
       console.log(guess)
+      compareWords(secret, guess)
     } else if (guess.length < 4) {
       console.log('guess is too short')
     }
@@ -54,24 +93,36 @@ function App() {
   }
   return (
     <Container>
-      <Title>Wordle clone</Title>
-      <Word>{word}</Word>
+      <Title>Wordle Clone</Title>
+      <Word>{secret}</Word>
+
+      <form
+        onSubmit={(e) => e.preventDefault()}
+      >
       <WordInput
-        maxLength={4}
-        minLength={4}
+        maxLength={secret.length}
+        minLength={secret.length}
         onChange={e => {
-          setGuess(e.target.value)
+          setGuess(e.target.value.toUpperCase())
           console.log(guess)
         }}
         type="text"
-      ></WordInput>
+        value={guess.toUpperCase()}
+        ></WordInput>
       <SubmitButton
         type="submit"
         onClick={() => handleClick()}
         disabled={!validGuess()}
-      >Check Word</SubmitButton>
+        >Check Word</SubmitButton>
+        </form>
+
+        <div>{message}</div>
     </Container>
   );
 }
 
 export default App;
+
+/* Documentation on controlled components:
+https://reactjs.org/docs/forms.html#controlled-components
+*/
