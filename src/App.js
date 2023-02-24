@@ -22,12 +22,16 @@ const Word = styled('div', {
   fontSize: "30px"
 })
 
-const WordInput = styled('input', {
+const WordInput = styled('input', {})
 
+const SubmitButton = styled('button', {})
+
+const WordList = styled('div', {
+  background: 'SkyBlue'
 })
 
-const SubmitButton = styled('button', {
-
+const GuessedWord = styled('p', {
+  color: "Navy"
 })
 
 function App() {
@@ -35,6 +39,8 @@ function App() {
   const [secret, setSecret] = useState('')
   const [guess, setGuess] = useState('')
   const [message, setMessage] = useState('')
+  const [guessList, setGuessList] = useState([])
+  const [gameState, setGameState] = useState(true)
 
   const compareWords = (s1, s2) => {
     const s1Letters = {}
@@ -43,8 +49,8 @@ function App() {
 
     if (s1 === s2) {
       setMessage(`Correct! Secret word is ${s1}`)
+      setGameState(false)
     } else {
-
 
       for (let i = 0; i < s1.length; i++) {
         let letter = s1[i]
@@ -86,16 +92,23 @@ function App() {
     // make input value is only updated with valid chars or empty string
     if (onlyLetters(event.target.value) || event.target.value === "") {
       setGuess(event.target.value.toUpperCase())
-      console.log(guess)
     }
   }
 
+  const updateList = () => {
+    if (gameState && guessList.length < 5) {
+      setGuessList(guessList.concat(guess))
+    } else if (guessList.length === 5) {
+      setMessage("Game over. Too many guesses")
+    }
+  }
 
   const handleClick = () => {
     if (guess.length === 4) {
       guess.toUpperCase()
-      console.log(guess)
       compareWords(secret, guess)
+      updateList()
+      setGuess("")
     } else if (guess.length < secret.length) {
       console.log('guess is too short')
     }
@@ -125,6 +138,11 @@ function App() {
           disabled={!validGuess()}
         >Check Word</SubmitButton>
       </form>
+      <WordList>
+        {guessList.map((item, index) => {
+          return (<GuessedWord key={index}>{item}</GuessedWord>)
+        })}
+      </WordList>
 
       <div>{message}</div>
     </Container>
