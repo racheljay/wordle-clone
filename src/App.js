@@ -27,7 +27,9 @@ const WordInput = styled('input', {})
 const SubmitButton = styled('button', {})
 
 const WordList = styled('div', {
-  background: 'SkyBlue'
+  background: 'SkyBlue',
+  display: 'flex',
+  flexDirection: "column-reverse"
 })
 
 const GuessedWord = styled('p', {
@@ -41,6 +43,12 @@ function App() {
   const [message, setMessage] = useState('')
   const [guessList, setGuessList] = useState([])
   const [gameState, setGameState] = useState(true)
+
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
+    const word = fourLetterWords[randomIndex]
+    setSecret(word)
+  }, [])
 
   const compareWords = (s1, s2) => {
     const s1Letters = {}
@@ -76,11 +84,6 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
-    const word = fourLetterWords[randomIndex]
-    setSecret(word)
-  }, [])
 
   const handleChange = (event) => {
 
@@ -138,13 +141,13 @@ function App() {
           disabled={!validGuess()}
         >Check Word</SubmitButton>
       </form>
+      <div>{message}</div>
       <WordList>
         {guessList.map((item, index) => {
           return (<GuessedWord key={index}>{item}</GuessedWord>)
         })}
       </WordList>
 
-      <div>{message}</div>
     </Container>
   );
 }
