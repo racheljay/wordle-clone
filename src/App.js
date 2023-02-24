@@ -18,13 +18,12 @@ const Title = styled('h1', {
   color: "orange",
   margin: "0 auto"
 })
-const Word = styled('div', {
-  fontSize: "30px"
-})
 
 const WordInput = styled('input', {})
 
 const SubmitButton = styled('button', {})
+
+const ResetButton = styled('button', {})
 
 const WordList = styled('div', {
   background: 'SkyBlue',
@@ -44,12 +43,17 @@ function App() {
   const [guessList, setGuessList] = useState([])
   const [gameState, setGameState] = useState(true)
 
-  useEffect(() => {
+  const pickWord = () => {
     const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
-    const word = fourLetterWords[randomIndex]
-    setSecret(word)
+    return fourLetterWords[randomIndex]
+    
+  }
+
+  useEffect(() => {
+    setSecret(pickWord())
   }, [])
 
+  // TODO: adjust game logic for index information
   const compareWords = (s1, s2) => {
     const s1Letters = {}
     let exactMatch = 0
@@ -106,7 +110,7 @@ function App() {
     }
   }
 
-  const handleClick = () => {
+  const handleSumbit = () => {
     if (guess.length === 4) {
       guess.toUpperCase()
       compareWords(secret, guess)
@@ -117,14 +121,22 @@ function App() {
     }
   }
 
+  const handleReset = () => {
+    setGuess("")
+    setMessage("")
+    setGuessList([])
+    setGameState(true)
+    setSecret(pickWord())
+  }
+
   const validGuess = () => {
     return guess.length === secret.length ? true : false
   }
   return (
     <Container>
       <Title>Wordle Clone</Title>
-      <Word>{secret}</Word>
-
+      
+      <ResetButton onClick={handleReset}>New Game</ResetButton>
       <form
         onSubmit={(e) => e.preventDefault()}
       >
@@ -137,7 +149,7 @@ function App() {
         ></WordInput>
         <SubmitButton
           type="submit"
-          onClick={() => handleClick()}
+          onClick={() => handleSumbit()}
           disabled={!validGuess()}
         >Check Word</SubmitButton>
       </form>
