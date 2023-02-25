@@ -1,7 +1,7 @@
 import './App.css';
 import { styled } from '@stitches/react';
 import { fourLetterWords } from './data/four-letter-words'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 /* Styled Components */
 
@@ -46,11 +46,13 @@ function App() {
   const pickWord = () => {
     const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
     return fourLetterWords[randomIndex]
-    
+
   }
 
+  const inputRef = useRef(null)
   useEffect(() => {
     setSecret(pickWord())
+    inputRef.current.focus()
   }, [])
 
   // TODO: adjust game logic for index information
@@ -96,17 +98,19 @@ function App() {
       return str.match(letters)
     }
 
-    // make input value is only updated with valid chars or empty string
+    // input value is only updated with valid chars or empty string
     if (onlyLetters(event.target.value) || event.target.value === "") {
       setGuess(event.target.value.toUpperCase())
     }
   }
+  const resetRef = useRef(null)
 
   const updateList = () => {
     if (gameState && guessList.length < 5) {
       setGuessList(guessList.concat(guess))
     } else if (guessList.length === 5) {
       setMessage("Game over. Too many guesses")
+      resetRef.current.focus()
     }
   }
 
@@ -127,6 +131,8 @@ function App() {
     setGuessList([])
     setGameState(true)
     setSecret(pickWord())
+
+    inputRef.current.focus()
   }
 
   const validGuess = () => {
@@ -135,8 +141,13 @@ function App() {
   return (
     <Container>
       <Title>Wordle Clone</Title>
-      
-      <ResetButton onClick={handleReset}>New Game</ResetButton>
+
+      <ResetButton
+        autoFocus={!gameState}
+        onClick={handleReset}
+        ref={resetRef}
+      >
+        New Game</ResetButton>
       <form
         onSubmit={(e) => e.preventDefault()}
       >
@@ -144,6 +155,7 @@ function App() {
           maxLength={secret.length}
           minLength={secret.length}
           onChange={handleChange}
+          ref={inputRef}
           type="text"
           value={guess.toUpperCase()}
         ></WordInput>
