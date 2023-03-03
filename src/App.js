@@ -31,6 +31,9 @@ const WordList = styled('div', {
   flexDirection: "column-reverse"
 })
 
+const Letter = styled('span', {
+  background: "white"
+})
 const GuessedWord = styled('p', {
   color: "Navy"
 })
@@ -60,12 +63,13 @@ function App() {
     const s1Letters = {}
     let exactMatch = 0
     let closeMatch = 0
+    let scores = new Array(s1.length).fill("")
 
     if (s1 === s2) {
       setMessage(`Correct! Secret word is ${s1}`)
+      scores.fill("correct")
       setGameState(false)
     } else {
-
       for (let i = 0; i < s1.length; i++) {
         let letter = s1[i]
 
@@ -75,6 +79,7 @@ function App() {
         s1Letters[letter]++
 
         if (letter === s2[i]) {
+          scores[i] = "correct"
           exactMatch++
         }
       }
@@ -82,12 +87,13 @@ function App() {
       for (let i = 0; i < s2.length; i++) {
         if (s1[i] !== s2[i] && s1Letters[s2[i]] > 0) {
           closeMatch++
+          scores[i] = "close"
           s1Letters[s2[i]]--
         }
       }
-
       setMessage(`Right letter, right place: ${exactMatch}\nRight letter, wrong place: ${closeMatch}`)
     }
+    console.log(scores)
   }
 
 
@@ -103,6 +109,7 @@ function App() {
       setGuess(event.target.value.toUpperCase())
     }
   }
+
   const resetRef = useRef(null)
 
   const updateList = () => {
@@ -125,6 +132,7 @@ function App() {
     }
   }
 
+
   const handleReset = () => {
     setGuess("")
     setMessage("")
@@ -141,7 +149,7 @@ function App() {
   return (
     <Container>
       <Title>Wordle Clone</Title>
-
+      <h2>{secret}</h2>
       <ResetButton
         autoFocus={!gameState}
         onClick={handleReset}
@@ -167,8 +175,12 @@ function App() {
       </form>
       <div>{message}</div>
       <WordList>
-        {guessList.map((item, index) => {
-          return (<GuessedWord key={index}>{item}</GuessedWord>)
+        {guessList.map((word, i) => {
+          return (<GuessedWord key={i}>
+            {word.split("").map((letter, j) => {
+              return (<Letter key={j}>{letter}</Letter>)
+            })}
+          </GuessedWord>)
         })}
       </WordList>
 
