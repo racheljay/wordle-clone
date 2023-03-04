@@ -94,6 +94,7 @@ function App() {
       setMessage(`Right letter, right place: ${exactMatch}\nRight letter, wrong place: ${closeMatch}`)
     }
     console.log(scores)
+    return scores
   }
 
 
@@ -110,11 +111,20 @@ function App() {
     }
   }
 
+  const letterColorMatch = str => {
+    if(str === "correct") {
+      return "green"
+    } else if (str === "close") {
+      return "yellow"
+    } else return ""
+  }
+
   const resetRef = useRef(null)
 
   const updateList = () => {
+    let gameScore = compareWords(secret, guess)
     if (gameState && guessList.length < 5) {
-      setGuessList(guessList.concat(guess))
+      setGuessList(guessList.concat({word: guess, score: gameScore}))
     } else if (guessList.length === 5) {
       setMessage("Game over. Too many guesses")
       resetRef.current.focus()
@@ -124,7 +134,7 @@ function App() {
   const handleSumbit = () => {
     if (guess.length === 4) {
       guess.toUpperCase()
-      compareWords(secret, guess)
+      
       updateList()
       setGuess("")
     } else if (guess.length < secret.length) {
@@ -175,10 +185,10 @@ function App() {
       </form>
       <div>{message}</div>
       <WordList>
-        {guessList.map((word, i) => {
+        {guessList.map((item, i) => {
           return (<GuessedWord key={i}>
-            {word.split("").map((letter, j) => {
-              return (<Letter key={j}>{letter}</Letter>)
+            {item.word.split("").map((letter, j) => {
+              return (<Letter key={j} css={{backgroundColor: letterColorMatch(item.score[j])}}>{letter}</Letter>)
             })}
           </GuessedWord>)
         })}
