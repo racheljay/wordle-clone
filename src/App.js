@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 /* Styled Components */
 
 const Container = styled('div', {
-  backgroundColor: "pink",
+  backgroundColor: "#313833",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -26,16 +26,24 @@ const SubmitButton = styled('button', {})
 const ResetButton = styled('button', {})
 
 const WordList = styled('div', {
-  background: 'SkyBlue',
   display: 'flex',
-  flexDirection: "column-reverse"
+  flexDirection: "column-reverse",
+  fontSize: "2.5rem",
+  width: "12rem"
 })
 
 const Letter = styled('span', {
-  background: "white"
+  alignItems: "center",
+  background: "white",
+  borderRadius: "20%",
+  display: "flex",
+  width: "100%",
+  justifyContent: "center",
 })
 const GuessedWord = styled('p', {
-  color: "Navy"
+  display: "flex",
+  justifyContent: "space-around",
+  margin: "0"
 })
 
 function App() {
@@ -52,11 +60,21 @@ function App() {
 
   }
 
+  // on page mount
   const inputRef = useRef(null)
   useEffect(() => {
     setSecret(pickWord())
     inputRef.current.focus()
   }, [])
+
+  const resetRef = useRef(null)
+  useEffect(() => {
+    if (gameState === false) {
+      resetRef.current.focus()
+    } else {
+      inputRef.current.focus()
+    }
+  }, [gameState])
 
   // TODO: adjust game logic for index information
   const compareWords = (s1, s2) => {
@@ -67,8 +85,8 @@ function App() {
 
     if (s1 === s2) {
       setMessage(`Correct! Secret word is ${s1}`)
-      scores.fill("correct")
       setGameState(false)
+      scores.fill("correct")
     } else {
       for (let i = 0; i < s1.length; i++) {
         let letter = s1[i]
@@ -112,29 +130,26 @@ function App() {
   }
 
   const letterColorMatch = str => {
-    if(str === "correct") {
-      return "green"
+    if (str === "correct") {
+      return "#47a603"
     } else if (str === "close") {
-      return "yellow"
+      return "#f2ac07"
     } else return ""
   }
 
-  const resetRef = useRef(null)
 
   const updateList = () => {
     let gameScore = compareWords(secret, guess)
     if (gameState && guessList.length < 5) {
-      setGuessList(guessList.concat({word: guess, score: gameScore}))
+      setGuessList(guessList.concat({ word: guess, score: gameScore }))
     } else if (guessList.length === 5) {
       setMessage("Game over. Too many guesses")
-      resetRef.current.focus()
     }
   }
 
   const handleSumbit = () => {
     if (guess.length === 4) {
       guess.toUpperCase()
-      
       updateList()
       setGuess("")
     } else if (guess.length < secret.length) {
@@ -149,8 +164,6 @@ function App() {
     setGuessList([])
     setGameState(true)
     setSecret(pickWord())
-
-    inputRef.current.focus()
   }
 
   const validGuess = () => {
@@ -170,6 +183,7 @@ function App() {
         onSubmit={(e) => e.preventDefault()}
       >
         <WordInput
+          disabled={!gameState}
           maxLength={secret.length}
           minLength={secret.length}
           onChange={handleChange}
@@ -188,7 +202,7 @@ function App() {
         {guessList.map((item, i) => {
           return (<GuessedWord key={i}>
             {item.word.split("").map((letter, j) => {
-              return (<Letter key={j} css={{backgroundColor: letterColorMatch(item.score[j])}}>{letter}</Letter>)
+              return (<Letter key={j} css={{ backgroundColor: letterColorMatch(item.score[j]) }}>{letter}</Letter>)
             })}
           </GuessedWord>)
         })}
