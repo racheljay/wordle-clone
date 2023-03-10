@@ -2,21 +2,28 @@ import './App.css';
 import { styled } from '@stitches/react';
 import { fourLetterWords } from './data/four-letter-words'
 import { useState, useEffect, useRef } from 'react';
-
-/* Styled Components */
-
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { solid, regular, brands, icon } from '@fortawesome/fontawesome-svg-core/import.macro'
+// TODO: icon not working because of babel plugin https://github.com/kentcdodds/babel-plugin-macros/blob/main/other/docs/user.md
+/*
+  Also tried using bootstrap icons. Those aren't working either
+  need to try a new approach
+*/
 const Container = styled('div', {
   backgroundColor: "#313833",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   height: "100vh",
-  margin: "0 auto"
+  margin: "0 auto",
 })
 
 const Title = styled('h1', {
   color: "orange",
-  margin: "0 auto"
+  fontFamily: "Yeseva One",
+  fontSize: "2.7rem",
+  margin: "0 auto",
+  marginTop: "2rem"
 })
 
 const WordInput = styled('input', {})
@@ -171,7 +178,7 @@ function App() {
   }
   return (
     <Container>
-      <Title>Wordle Clone</Title>
+      <Title>Generic Word Guessing Game</Title>
       <h2>{secret}</h2>
       <ResetButton
         autoFocus={!gameState}
@@ -195,7 +202,10 @@ function App() {
           type="submit"
           onClick={() => handleSumbit()}
           disabled={!validGuess()}
-        >Check Word</SubmitButton>
+        >Enter
+          {/* <FontAwesomeIcon icon="fa-solid fa-turn-down-left" /> */}
+          <i class="bi bi-arrow-right-circle-fill"></i>
+          </SubmitButton>
       </form>
       <div>{message}</div>
       <WordList>
