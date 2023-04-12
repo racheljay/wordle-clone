@@ -83,37 +83,47 @@ function App() {
     }
   }, [gameState])
 
-  // TODO: adjust game logic for index information
-  const compareWords = (s1, s2) => {
-    const s1Letters = {}
+  const compareWords = (secret, guess) => {
+    const secretLetters = {}
     let exactMatch = 0
     let closeMatch = 0
-    let scores = new Array(s1.length).fill("")
+    // Init scores array with blank string for each letter
+    let scores = new Array(secret.length).fill("")
 
-    if (s1 === s2) {
-      setMessage(`Correct! Secret word is ${s1}`)
+    // Early exit logic for perfect match
+    if (secret === guess) {
+      setMessage(`Correct! Secret word is ${secret}`)
       setGameState(false)
       scores.fill("correct")
     } else {
-      for (let i = 0; i < s1.length; i++) {
-        let letter = s1[i]
+      for (let i = 0; i < secret.length; i++) {
+        let letter = secret[i]
 
-        if (!(letter in s1Letters)) {
-          s1Letters[letter] = 0
+        // Turn secret letter string into object for comparison
+        if (!(letter in secretLetters)) {
+          secretLetters[letter] = 0
         }
-        s1Letters[letter]++
+        secretLetters[letter]++
 
-        if (letter === s2[i]) {
+        // If there is a perfect match:
+        if (letter === guess[i]) {
           scores[i] = "correct"
+          // take one from secretLetter obj so that
+          // perfect matches don't go towards close guesses.
+          secretLetters[letter]--
           exactMatch++
         }
       }
 
-      for (let i = 0; i < s2.length; i++) {
-        if (s1[i] !== s2[i] && s1Letters[s2[i]] > 0) {
+      // handle right letter wrong spot matches
+      for (let i = 0; i < guess.length; i++) {
+        // letters don't match, but guess letter is in secret word
+        // and not accounted for yet
+        if (secret[i] !== guess[i] && secretLetters[guess[i]] > 0) {
           closeMatch++
           scores[i] = "close"
-          s1Letters[s2[i]]--
+          // remove guess from secret letters so we don't count it again
+          secretLetters[guess[i]]--
         }
       }
       setMessage(`Right letter, right place: ${exactMatch}\nRight letter, wrong place: ${closeMatch}`)
@@ -154,8 +164,8 @@ function App() {
     }
   }
 
-  const handleSumbit = () => {
-    if (guess.length === 4) {
+  const handleSubmit = () => {
+    if (guess.length === secret.length) {
       guess.toUpperCase()
       updateList()
       setGuess("")
@@ -187,7 +197,7 @@ function App() {
       >
         New Game</ResetButton>
       <form
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={e => e.preventDefault()}
       >
         <WordInput
           disabled={!gameState}
@@ -200,7 +210,7 @@ function App() {
         ></WordInput>
         <SubmitButton
           type="submit"
-          onClick={() => handleSumbit()}
+          onClick={() => handleSubmit()}
           disabled={!validGuess()}
         >Enter
           {/* <FontAwesomeIcon icon="fa-solid fa-turn-down-left" /> */}
