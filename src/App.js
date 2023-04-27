@@ -5,6 +5,8 @@ import { useState, useEffect, useRef } from 'react';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { solid, regular, brands, icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 // TODO: icon not working because of babel plugin https://github.com/kentcdodds/babel-plugin-macros/blob/main/other/docs/user.md
+
+// TODO HOW MANY GUESSES LEFT?
 /*
   Also tried using bootstrap icons. Those aren't working either
   need to try a new approach
@@ -16,6 +18,7 @@ const Container = styled('div', {
   alignItems: "center",
   height: "100vh",
   margin: "0 auto",
+  padding: "0rem 10rem"
 })
 
 const Title = styled('h1', {
@@ -51,6 +54,15 @@ const GuessedWord = styled('p', {
   display: "flex",
   justifyContent: "space-around",
   margin: "0"
+})
+
+const Instructions = styled('p', {
+  background: "AntiqueWhite",
+  borderRadius: "1rem",
+  color: "black",
+  fontSize: "1.2rem",
+  lineHeight: "1.7rem",
+  padding: "1rem"
 })
 
 function App() {
@@ -157,9 +169,9 @@ function App() {
 
   const updateList = () => {
     let gameScore = compareWords(secret, guess)
-    if (gameState && guessList.length < 5) {
+    if (gameState && guessList.length < 8) {
       setGuessList(guessList.concat({ word: guess, score: gameScore }))
-    } else if (guessList.length === 5) {
+    } else if (guessList.length === 8) {
       setMessage("Game over. Too many guesses")
     }
   }
@@ -189,7 +201,13 @@ function App() {
   return (
     <Container>
       <Title>Generic Word Guessing Game</Title>
-      <h2>{secret}</h2>
+      <Instructions>
+        Welcome to a generic word guessing game! Guess the <i>secret</i> word by typing your answer into the box below. Hit enter when you are ready to submit your guess.
+        A list of your previous guesses will appear below. If a letter is green: Congrats! That letter is in the correct spot in the <i>mystery word</i>. If the letter is orange
+        do not despair! You are close! Your letter is in the word, but it's in the wrong spot! Try again! So close! But be careful, you only get NUM guesses so you must pay attention
+        to the letters that are not in the <i>mystery word</i>.
+      </Instructions>
+      {/* <h2>{secret}</h2> */}
       <ResetButton
         autoFocus={!gameState}
         onClick={handleReset}
@@ -217,7 +235,7 @@ function App() {
           <i class="bi bi-arrow-right-circle-fill"></i>
           </SubmitButton>
       </form>
-      <div>{message}</div>
+      {message && <Instructions>{message}</Instructions>}
       <WordList>
         {guessList.map((item, i) => {
           return (<GuessedWord key={i}>
