@@ -6,7 +6,6 @@ import { useState, useEffect, useRef } from 'react';
 // import { solid, regular, brands, icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 // TODO: icon not working because of babel plugin https://github.com/kentcdodds/babel-plugin-macros/blob/main/other/docs/user.md
 
-// TODO HOW MANY GUESSES LEFT?
 /*
   Also tried using bootstrap icons. Those aren't working either
   need to try a new approach
@@ -65,6 +64,12 @@ const Instructions = styled('p', {
   padding: "1rem"
 })
 
+const Guesses = styled('div', {
+  color: "orange",
+  fontFamily: "Yeseva One",
+  fontSize: "1.2rem"
+})
+
 function App() {
 
   const [secret, setSecret] = useState('')
@@ -72,6 +77,7 @@ function App() {
   const [message, setMessage] = useState('')
   const [guessList, setGuessList] = useState([])
   const [gameState, setGameState] = useState(true)
+  const [guessesLeft, setGuessesLeft] = useState(8)
 
   const pickWord = () => {
     const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
@@ -171,7 +177,9 @@ function App() {
     let gameScore = compareWords(secret, guess)
     if (gameState && guessList.length < 8) {
       setGuessList(guessList.concat({ word: guess, score: gameScore }))
+      setGuessesLeft(guessesLeft - 1)
     } else if (guessList.length === 8) {
+      setGameState(false)
       setMessage("Game over. Too many guesses")
     }
   }
@@ -186,13 +194,13 @@ function App() {
     }
   }
 
-
   const handleReset = () => {
     setGuess("")
     setMessage("")
     setGuessList([])
     setGameState(true)
     setSecret(pickWord())
+    setGuessesLeft(8)
   }
 
   const validGuess = () => {
@@ -204,9 +212,10 @@ function App() {
       <Instructions>
         Welcome to a generic word guessing game! Guess the <i>secret</i> word by typing your answer into the box below. Hit enter when you are ready to submit your guess.
         A list of your previous guesses will appear below. If a letter is green: Congrats! That letter is in the correct spot in the <i>mystery word</i>. If the letter is orange
-        do not despair! You are close! Your letter is in the word, but it's in the wrong spot! Try again! So close! But be careful, you only get NUM guesses so you must pay attention
+        do not despair! You are close! Your letter is in the word, but it's in the wrong spot! Try again! So close! But be careful, you only get {guessesLeft} guesses so you must pay attention
         to the letters that are not in the <i>mystery word</i>.
       </Instructions>
+      <Guesses>Guesses Left: {guessesLeft}</Guesses>
       {/* <h2>{secret}</h2> */}
       <ResetButton
         autoFocus={!gameState}
@@ -232,7 +241,7 @@ function App() {
           disabled={!validGuess()}
         >Enter
           {/* <FontAwesomeIcon icon="fa-solid fa-turn-down-left" /> */}
-          <i class="bi bi-arrow-right-circle-fill"></i>
+          {/* <i class="bi bi-arrow-right-circle-fill"></i> */}
           </SubmitButton>
       </form>
       {message && <Instructions>{message}</Instructions>}
