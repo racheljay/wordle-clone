@@ -3,7 +3,8 @@ import { styled } from '@stitches/react';
 import {
   Container, Title, WordInput, SubmitButton,
   ResetButton, WordList, Letter, GuessedWord,
-  Instructions, Guesses
+  Instructions, Guesses, Form, InstructionContainer,
+  InstructionDismissButton
 } from "./styles"
 import { fourLetterWords } from './data/four-letter-words'
 import { useState, useEffect, useRef } from 'react';
@@ -19,6 +20,7 @@ import { useState, useEffect, useRef } from 'react';
 function App() {
   const maxChances = 5
 
+  const [showInstructions, setShowInstructions] = useState(true)
   const [secret, setSecret] = useState('')
   const [guess, setGuess] = useState('')
   const [message, setMessage] = useState('')
@@ -160,12 +162,15 @@ function App() {
   return (
     <Container>
       <Title>Generic Word Guessing Game</Title>
-      <Instructions>
+      {showInstructions && <Instructions>
         Welcome to a generic word guessing game! Guess the <i>secret</i> word by typing your answer into the box below. Hit enter when you are ready to submit your guess.
         A list of your previous guesses will appear below. If a letter is green: Congrats! That letter is in the correct spot in the <i>mystery word</i>. If the letter is orange
         do not despair! You are close! Your letter is in the word, but it's in the wrong spot! Try again! So close! But be careful, you only get {guessesLeft} guesses so you must pay attention
         to the letters that are not in the <i>mystery word</i>.
-      </Instructions>
+        <InstructionDismissButton
+          onClick={() => setShowInstructions(false)
+          }>X</InstructionDismissButton>
+      </Instructions>}
       <Guesses>Guesses Left: {guessesLeft}</Guesses>
       <h2>{secret}</h2>
       <ResetButton
@@ -174,7 +179,7 @@ function App() {
         ref={resetRef}
       >
         New Game</ResetButton>
-      <form
+      <Form
         onSubmit={e => e.preventDefault()}
       >
         <WordInput
@@ -194,7 +199,7 @@ function App() {
           {/* <FontAwesomeIcon icon="fa-solid fa-turn-down-left" /> */}
           {/* <i class="bi bi-arrow-right-circle-fill"></i> */}
         </SubmitButton>
-      </form>
+      </Form>
       {message && <Instructions>{message}</Instructions>}
       <WordList>
         {guessList.map((item, i) => {
