@@ -1,5 +1,10 @@
 import './App.css';
 import { styled } from '@stitches/react';
+import {
+  Container, Title, WordInput, SubmitButton,
+  ResetButton, WordList, Letter, GuessedWord,
+  Instructions, Guesses
+} from "./styles"
 import { fourLetterWords } from './data/four-letter-words'
 import { useState, useEffect, useRef } from 'react';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,74 +15,16 @@ import { useState, useEffect, useRef } from 'react';
   Also tried using bootstrap icons. Those aren't working either
   need to try a new approach
 */
-const Container = styled('div', {
-  backgroundColor: "#313833",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  height: "100vh",
-  margin: "0 auto",
-  padding: "0rem 10rem"
-})
-
-const Title = styled('h1', {
-  color: "orange",
-  fontFamily: "Yeseva One",
-  fontSize: "2.7rem",
-  margin: "0 auto",
-  marginTop: "2rem"
-})
-
-const WordInput = styled('input', {})
-
-const SubmitButton = styled('button', {})
-
-const ResetButton = styled('button', {})
-
-const WordList = styled('div', {
-  display: 'flex',
-  flexDirection: "column-reverse",
-  fontSize: "2.5rem",
-  width: "12rem"
-})
-
-const Letter = styled('span', {
-  alignItems: "center",
-  background: "white",
-  borderRadius: "20%",
-  display: "flex",
-  width: "100%",
-  justifyContent: "center",
-})
-const GuessedWord = styled('p', {
-  display: "flex",
-  justifyContent: "space-around",
-  margin: "0"
-})
-
-const Instructions = styled('p', {
-  background: "AntiqueWhite",
-  borderRadius: "1rem",
-  color: "black",
-  fontSize: "1.2rem",
-  lineHeight: "1.7rem",
-  padding: "1rem"
-})
-
-const Guesses = styled('div', {
-  color: "orange",
-  fontFamily: "Yeseva One",
-  fontSize: "1.2rem"
-})
 
 function App() {
+  const maxChances = 5
 
   const [secret, setSecret] = useState('')
   const [guess, setGuess] = useState('')
   const [message, setMessage] = useState('')
   const [guessList, setGuessList] = useState([])
   const [gameState, setGameState] = useState(true)
-  const [guessesLeft, setGuessesLeft] = useState(8)
+  const [guessesLeft, setGuessesLeft] = useState(maxChances)
 
   const pickWord = () => {
     const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
@@ -175,10 +122,14 @@ function App() {
 
   const updateList = () => {
     let gameScore = compareWords(secret, guess)
-    if (gameState && guessList.length < 8) {
+    // adding a guess to the list
+    if (gameState && guessList.length < maxChances) {
       setGuessList(guessList.concat({ word: guess, score: gameScore }))
       setGuessesLeft(guessesLeft - 1)
-    } else if (guessList.length === 8) {
+    }
+    // end game if max guesses are guessed
+    // add one to length to get ahead of state synch
+    if (guessList.length + 1 === maxChances) {
       setGameState(false)
       setMessage("Game over. Too many guesses")
     }
@@ -200,7 +151,7 @@ function App() {
     setGuessList([])
     setGameState(true)
     setSecret(pickWord())
-    setGuessesLeft(8)
+    setGuessesLeft(maxChances)
   }
 
   const validGuess = () => {
@@ -216,7 +167,7 @@ function App() {
         to the letters that are not in the <i>mystery word</i>.
       </Instructions>
       <Guesses>Guesses Left: {guessesLeft}</Guesses>
-      {/* <h2>{secret}</h2> */}
+      <h2>{secret}</h2>
       <ResetButton
         autoFocus={!gameState}
         onClick={handleReset}
@@ -239,10 +190,10 @@ function App() {
           type="submit"
           onClick={() => handleSubmit()}
           disabled={!validGuess()}
-        >Enter
+        >Guess
           {/* <FontAwesomeIcon icon="fa-solid fa-turn-down-left" /> */}
           {/* <i class="bi bi-arrow-right-circle-fill"></i> */}
-          </SubmitButton>
+        </SubmitButton>
       </form>
       {message && <Instructions>{message}</Instructions>}
       <WordList>
