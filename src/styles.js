@@ -11,8 +11,11 @@ export const Container = styled('div', {
 })
 
 export const Form = styled('form', {
+    alignItems: "center",
+    // border: "2px dotted pink",
     display: "flex",
-    flexDirection: "column"
+    margin: "1rem",
+    // flexDirection: "column"
 })
 
 export const Guesses = styled('div', {
@@ -63,11 +66,27 @@ export const Letter = styled('span', {
     justifyContent: "center",
 })
 
-export const ResetButton = styled('button', {})
+// TODO: I don't think this is the effect I'm looking for
+// try using an "after" element to make the "shadow" and then
+// have a regular shadow on top to add depth
+export const ResetButton = styled('button', {
+    background: "#ed327a",
+    border: "none",
+    borderRadius: "0",
+    boxShadow: "0.5rem 0.5rem purple",
+    fontSize: "1.5rem",
+    padding: "0.5rem"
+})
 
 export const SubmitButton = styled('button', {
-    fontSize: "1.5rem",
-    height: "2rem"
+    display: "none"
+    // background: "transparent",
+    // border: "none",
+    // color: "green",
+    // fontSize: "2.5rem",
+    // "&:disabled": {
+    //     color: "grey"
+    // }
 })
 
 export const Title = styled('h1', {
@@ -79,9 +98,16 @@ export const Title = styled('h1', {
 })
 
 export const WordInput = styled('input', {
+    backgroundColor: "transparent",
+    border: "2px solid green",
+    borderRadius: "0.7rem",
+    color: "orange",
     fontSize: "2rem",
     letterSpacing: "0.4rem",
+    // margin: "1rem",
+    outline: "none",
     padding: "0.5rem",
+    placeHolder: "XXXX",
     width: "10rem"
 
 })

@@ -1,5 +1,4 @@
 import './App.css';
-import { styled } from '@stitches/react';
 import {
   Container, Title, WordInput, SubmitButton,
   ResetButton, WordList, Letter, GuessedWord,
@@ -8,14 +7,9 @@ import {
 } from "./styles"
 import { fourLetterWords } from './data/four-letter-words'
 import { useState, useEffect, useRef } from 'react';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import { solid, regular, brands, icon } from '@fortawesome/fontawesome-svg-core/import.macro'
-// TODO: icon not working because of babel plugin https://github.com/kentcdodds/babel-plugin-macros/blob/main/other/docs/user.md
-
-/*
-  Also tried using bootstrap icons. Those aren't working either
-  need to try a new approach
-*/
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faX, faCircleCheck as solidCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCircleCheck } from '@fortawesome/free-regular-svg-icons'
 
 function App() {
   const maxChances = 5
@@ -169,7 +163,7 @@ function App() {
         to the letters that are not in the <i>mystery word</i>.
         <InstructionDismissButton
           onClick={() => setShowInstructions(false)
-          }>X</InstructionDismissButton>
+          }><FontAwesomeIcon icon={faX} /></InstructionDismissButton>
       </Instructions>}
       <Guesses>Guesses Left: {guessesLeft}</Guesses>
       <h2>{secret}</h2>
@@ -195,9 +189,7 @@ function App() {
           type="submit"
           onClick={() => handleSubmit()}
           disabled={!validGuess()}
-        >Guess
-          {/* <FontAwesomeIcon icon="fa-solid fa-turn-down-left" /> */}
-          {/* <i class="bi bi-arrow-right-circle-fill"></i> */}
+        >
         </SubmitButton>
       </Form>
       {message && <Instructions>{message}</Instructions>}
