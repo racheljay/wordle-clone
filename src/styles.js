@@ -7,15 +7,17 @@ export const Container = styled('div', {
     alignItems: "center",
     height: "100vh",
     margin: "0 auto",
-    padding: "0rem 10rem"
+    padding: "0rem 10rem",
+    // had to add relative positioning here to make
+    // the z index on the button ::after not go behind everything
+    position: 'relative',
+    zIndex: "-1"
 })
 
 export const Form = styled('form', {
     alignItems: "center",
-    // border: "2px dotted pink",
     display: "flex",
     margin: "1rem",
-    // flexDirection: "column"
 })
 
 export const Guesses = styled('div', {
@@ -70,12 +72,25 @@ export const Letter = styled('span', {
 // try using an "after" element to make the "shadow" and then
 // have a regular shadow on top to add depth
 export const ResetButton = styled('button', {
-    background: "#ed327a",
+    background: "AntiqueWhite",
     border: "none",
     borderRadius: "0",
-    boxShadow: "0.5rem 0.5rem purple",
     fontSize: "1.5rem",
-    padding: "0.5rem"
+    padding: "0.5rem",
+    position: "relative",
+    "&::after": {
+        content: `''`,
+        display: 'block',
+        background: "orange",
+        position: 'absolute',
+        top: '0.5rem',
+        left: '0.5rem',
+        width: "100%",
+        height: "100%",
+        borderRadius: 'inherit',
+        zIndex: "-1",
+
+    }
 })
 
 export const SubmitButton = styled('button', {
