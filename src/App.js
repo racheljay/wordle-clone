@@ -166,7 +166,7 @@ function App() {
           }><FontAwesomeIcon icon={faX} /></InstructionDismissButton>
       </Instructions>}
       <Guesses>Guesses Left: {guessesLeft}</Guesses>
-      <h2>{secret}</h2>
+      {/* <h2>{secret}</h2> */}
       <ResetButton
         autoFocus={!gameState}
         onClick={handleReset}

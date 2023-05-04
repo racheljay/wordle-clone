@@ -11,7 +11,7 @@ export const Container = styled('div', {
     // had to add relative positioning here to make
     // the z index on the button ::after not go behind everything
     position: 'relative',
-    zIndex: "-1"
+    zIndex: "0"
 })
 
 export const Form = styled('form', {
@@ -23,7 +23,8 @@ export const Form = styled('form', {
 export const Guesses = styled('div', {
     color: "orange",
     fontFamily: "Yeseva One",
-    fontSize: "1.2rem"
+    fontSize: "1.2rem",
+    margin: "1rem"
 })
 
 export const GuessedWord = styled('p', {
@@ -68,16 +69,17 @@ export const Letter = styled('span', {
     justifyContent: "center",
 })
 
-// TODO: I don't think this is the effect I'm looking for
-// try using an "after" element to make the "shadow" and then
-// have a regular shadow on top to add depth
 export const ResetButton = styled('button', {
     background: "AntiqueWhite",
     border: "none",
     borderRadius: "0",
-    fontSize: "1.5rem",
+    boxShadow: "0px 3px 15px rgba(0,0,0,0.2)",
+    fontSize: "1.2rem",
     padding: "0.5rem",
     position: "relative",
+    "&:hover": {
+        background: "rgb(230 215 190)"
+    },
     "&::after": {
         content: `''`,
         display: 'block',
@@ -89,19 +91,22 @@ export const ResetButton = styled('button', {
         height: "100%",
         borderRadius: 'inherit',
         zIndex: "-1",
-
-    }
+        "&:active": {
+            background: "yellow",
+        },     
+    },
+    "&:active": {
+        top: '0.5rem',
+        left: "0.5rem",
+        "&::after": {
+            top: '0rem',
+            left: "0rem"
+        }
+    },
 })
 
 export const SubmitButton = styled('button', {
     display: "none"
-    // background: "transparent",
-    // border: "none",
-    // color: "green",
-    // fontSize: "2.5rem",
-    // "&:disabled": {
-    //     color: "grey"
-    // }
 })
 
 export const Title = styled('h1', {
@@ -109,7 +114,8 @@ export const Title = styled('h1', {
     fontFamily: "Yeseva One",
     fontSize: "2.7rem",
     margin: "0 auto",
-    marginTop: "2rem"
+    marginTop: "2rem",
+    textAlign: "center"
 })
 
 export const WordInput = styled('input', {
@@ -119,7 +125,6 @@ export const WordInput = styled('input', {
     color: "orange",
     fontSize: "2rem",
     letterSpacing: "0.4rem",
-    // margin: "1rem",
     outline: "none",
     padding: "0.5rem",
     placeHolder: "XXXX",
