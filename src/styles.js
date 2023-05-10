@@ -72,7 +72,7 @@ export const Letter = styled('span', {
 export const ResetButton = styled('button', {
     background: "AntiqueWhite",
     border: "none",
-    borderRadius: "0",
+    borderRadius: "0.4rem",
     boxShadow: "0px 3px 15px rgba(0,0,0,0.2)",
     fontSize: "1.2rem",
     padding: "0.5rem",

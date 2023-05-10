@@ -2,24 +2,23 @@ import './App.css';
 import {
   Container, Title, WordInput, SubmitButton,
   ResetButton, WordList, Letter, GuessedWord,
-  Instructions, Guesses, Form, InstructionContainer,
+  Instructions, Guesses, Form,
   InstructionDismissButton
 } from "./styles"
 import { fourLetterWords } from './data/four-letter-words'
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faX, faCircleCheck as solidCheck } from '@fortawesome/free-solid-svg-icons'
-import { faCircleCheck } from '@fortawesome/free-regular-svg-icons'
+import { faX } from '@fortawesome/free-solid-svg-icons'
 
 function App() {
   const maxChances = 5
 
   const [showInstructions, setShowInstructions] = useState(true)
-  const [secret, setSecret] = useState('')
+  const [secret, setSecret] = useState('') // TODO save to session storage
   const [guess, setGuess] = useState('')
   const [message, setMessage] = useState('')
-  const [guessList, setGuessList] = useState([])
-  const [gameState, setGameState] = useState(true)
+  const [guessList, setGuessList] = useState([]) // TODO save to session storage
+  const [gameState, setGameState] = useState(true) // TODO save to session storage
   const [guessesLeft, setGuessesLeft] = useState(maxChances)
 
   const pickWord = () => {
@@ -28,14 +27,31 @@ function App() {
 
   }
 
-  // on page mount
   const inputRef = useRef(null)
+  // on page mount
   useEffect(() => {
-    setSecret(pickWord())
+    // check session storage
+    let sessionSecret = sessionStorage.getItem("secret");
+    console.log({sessionSecret})
+    if (!sessionSecret || sessionSecret === "") {
+      setSecret(pickWord())
+    }
+
     inputRef.current.focus()
   }, [])
+  
+  useEffect(() => {
+    let sessionSecret = sessionStorage.getItem("secret");
+    if(!sessionSecret) {
+      sessionStorage.setItem("secret", `${secret}`);
+    } else {
+      setSecret(sessionSecret)
+    }
+    console.log(sessionSecret)
+  },[secret])
 
   const resetRef = useRef(null)
+  // handle focus shift based on game state
   useEffect(() => {
     if (gameState === false) {
       resetRef.current.focus()
@@ -127,7 +143,7 @@ function App() {
     // add one to length to get ahead of state synch
     if (guessList.length + 1 === maxChances) {
       setGameState(false)
-      setMessage("Game over. Too many guesses")
+      setMessage(`Game Over! Secret word was ${secret}!`)
     }
   }
 
@@ -142,6 +158,7 @@ function App() {
   }
 
   const handleReset = () => {
+    sessionStorage.clear()
     setGuess("")
     setMessage("")
     setGuessList([])
@@ -166,7 +183,7 @@ function App() {
           }><FontAwesomeIcon icon={faX} /></InstructionDismissButton>
       </Instructions>}
       <Guesses>Guesses Left: {guessesLeft}</Guesses>
-      {/* <h2>{secret}</h2> */}
+      <h2>{secret}</h2>
       <ResetButton
         autoFocus={!gameState}
         onClick={handleReset}
