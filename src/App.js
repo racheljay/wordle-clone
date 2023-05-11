@@ -22,12 +22,20 @@ function App() {
     }
   }
 
+  const getGuessList = () => {
+    let sessionGuessList = JSON.parse(sessionStorage.getItem("guessList"))
+    if(sessionGuessList) {
+      return sessionGuessList
+    } else {
+      return []
+    }
+  }
   const [showInstructions, setShowInstructions] = useState(true)
-  const [secret, setSecret] = useState('') // TODO save to session storage
+  const [secret, setSecret] = useState('') 
   const [guess, setGuess] = useState('')
   const [message, setMessage] = useState('')
-  const [guessList, setGuessList] = useState([]) // TODO save to session storage
-  const [gameState, setGameState] = useState(true) // TODO save to session storage
+  const [guessList, setGuessList] = useState(getGuessList)
+  const [gameState, setGameState] = useState(true) 
   const [guessesLeft, setGuessesLeft] = useState(getGuessesLeft)
 
   const pickWord = () => {
@@ -41,14 +49,17 @@ function App() {
   useEffect(() => {
     // check session storage
     let sessionSecret = sessionStorage.getItem("secret")
+    let sessionGuessList = JSON.parse(sessionStorage.getItem("guessList"))
     let sessionGuessesLeft = JSON.parse(sessionStorage.getItem("guessesLeft"))
-    // console.log({sessionSecret})
     if (!sessionSecret || sessionSecret === "") {
       setSecret(pickWord())
     }
-    if (sessionGuessesLeft) {
-      setGuessesLeft(JSON.parse(sessionGuessesLeft))
-    }
+    // if(sessionGuessList) {
+    //   setGuessList(sessionGuessList)
+    // }
+    // if (sessionGuessesLeft) {
+    //   setGuessesLeft(sessionGuessesLeft)
+    // }
 
     inputRef.current.focus()
   }, [])
@@ -67,9 +78,9 @@ function App() {
       setSecret(sessionSecret)
     }
 
-    console.log(guessesLeft)
-
     sessionStorage.setItem("guessesLeft", `${guessesLeft}`)
+    sessionStorage.setItem("guessList", JSON.stringify(guessList))
+    // sessionStorage.setItem("")
 
     // if(sessionGuessList === null) {
     //   sessionStorage.setItem("guessList", JSON.stringify(guessList))
@@ -177,9 +188,7 @@ function App() {
       setGuessList(guessList.concat({ word: guess, score: gameScore }))
       // sessionStorage.setItem("guessList", guessList)
       // }
-      // if (!sessionGuessesLeft) {
       setGuessesLeft(guessesLeft - 1)
-      // }
     }
     // end game if max guesses are guessed
     // add one to length to get ahead of state synch
