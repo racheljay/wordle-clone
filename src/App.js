@@ -12,11 +12,13 @@ import { faX } from '@fortawesome/free-solid-svg-icons'
 
 function App() {
   const maxChances = 5
-  
+
   const getGuessesLeft = () => {
     let sessionGuessesLeft = JSON.parse(sessionStorage.getItem("guessesLeft"))
-    if(sessionGuessesLeft) {
+    if (sessionGuessesLeft) {
       return sessionGuessesLeft
+    } else if (guessList.length >= maxChances) {
+      return 0
     } else {
       return maxChances
     }
@@ -24,24 +26,25 @@ function App() {
 
   const getGuessList = () => {
     let sessionGuessList = JSON.parse(sessionStorage.getItem("guessList"))
-    if(sessionGuessList) {
+    if (sessionGuessList) {
       return sessionGuessList
     } else {
       return []
     }
   }
+
+  // state variables
   const [showInstructions, setShowInstructions] = useState(true)
-  const [secret, setSecret] = useState('') 
+  const [secret, setSecret] = useState('')
   const [guess, setGuess] = useState('')
   const [message, setMessage] = useState('')
   const [guessList, setGuessList] = useState(getGuessList)
-  const [gameState, setGameState] = useState(true) 
+  const [gameState, setGameState] = useState(true)
   const [guessesLeft, setGuessesLeft] = useState(getGuessesLeft)
 
   const pickWord = () => {
     const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
     return fourLetterWords[randomIndex]
-
   }
 
   const inputRef = useRef(null)
@@ -49,17 +52,10 @@ function App() {
   useEffect(() => {
     // check session storage
     let sessionSecret = sessionStorage.getItem("secret")
-    let sessionGuessList = JSON.parse(sessionStorage.getItem("guessList"))
-    let sessionGuessesLeft = JSON.parse(sessionStorage.getItem("guessesLeft"))
+ 
     if (!sessionSecret || sessionSecret === "") {
       setSecret(pickWord())
     }
-    // if(sessionGuessList) {
-    //   setGuessList(sessionGuessList)
-    // }
-    // if (sessionGuessesLeft) {
-    //   setGuessesLeft(sessionGuessesLeft)
-    // }
 
     inputRef.current.focus()
   }, [])
@@ -67,10 +63,6 @@ function App() {
   // handle session storage
   useEffect(() => {
     let sessionSecret = sessionStorage.getItem("secret")
-    let sessionGuessList = sessionStorage.getItem("guessList")
-    let sessionGuessesLeft = sessionStorage.getItem("guessesLeft")
-
-    console.log(sessionSecret, sessionGuessList, sessionGuessesLeft)
 
     if (!sessionSecret) {
       sessionStorage.setItem("secret", `${secret}`);
@@ -80,19 +72,7 @@ function App() {
 
     sessionStorage.setItem("guessesLeft", `${guessesLeft}`)
     sessionStorage.setItem("guessList", JSON.stringify(guessList))
-    // sessionStorage.setItem("")
 
-    // if(sessionGuessList === null) {
-    //   sessionStorage.setItem("guessList", JSON.stringify(guessList))
-    // } else {
-    //   setGuessList(JSON.parse(sessionGuessList))
-    // }
-
-    // if(!sessionGuessesLeft) {
-    //   sessionStorage.setItem("guessesLeft", JSON.stringify(guessesLeft))
-    // } else {
-    //   setGuessList(JSON.parse(sessionGuessesLeft))
-    // }
   }, [secret, guessesLeft, guessList])
 
   const resetRef = useRef(null)
@@ -150,10 +130,8 @@ function App() {
       }
       setMessage(`Right letter, right place: ${exactMatch}\nRight letter, wrong place: ${closeMatch}`)
     }
-    console.log(scores)
     return scores
   }
-
 
   const handleChange = (event) => {
 
@@ -176,18 +154,13 @@ function App() {
     } else return ""
   }
 
-
   const updateList = () => {
-    let sessionGuessList = sessionStorage.getItem("guessList")
-    let sessionGuessesLeft = sessionStorage.getItem("guessesLeft")
 
     let gameScore = compareWords(secret, guess)
     // adding a guess to the list
     if (gameState && guessList.length < maxChances) {
-      // if(!sessionGuessList) {
       setGuessList(guessList.concat({ word: guess, score: gameScore }))
-      // sessionStorage.setItem("guessList", guessList)
-      // }
+   
       setGuessesLeft(guessesLeft - 1)
     }
     // end game if max guesses are guessed
@@ -203,9 +176,7 @@ function App() {
       guess.toUpperCase()
       updateList()
       setGuess("")
-    } else if (guess.length < secret.length) {
-      console.log('guess is too short')
-    }
+    } 
   }
 
   const handleReset = () => {
@@ -234,7 +205,7 @@ function App() {
           }><FontAwesomeIcon icon={faX} /></InstructionDismissButton>
       </Instructions>}
       <Guesses>Guesses Left: {guessesLeft}</Guesses>
-      <h2>{secret}</h2>
+      {/* <h2>{secret}</h2> */}
       <ResetButton
         autoFocus={!gameState}
         onClick={handleReset}
