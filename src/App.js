@@ -12,6 +12,15 @@ import { faX } from '@fortawesome/free-solid-svg-icons'
 
 function App() {
   const maxChances = 5
+  
+  const getGuessesLeft = () => {
+    let sessionGuessesLeft = JSON.parse(sessionStorage.getItem("guessesLeft"))
+    if(sessionGuessesLeft) {
+      return sessionGuessesLeft
+    } else {
+      return maxChances
+    }
+  }
 
   const [showInstructions, setShowInstructions] = useState(true)
   const [secret, setSecret] = useState('') // TODO save to session storage
@@ -19,7 +28,7 @@ function App() {
   const [message, setMessage] = useState('')
   const [guessList, setGuessList] = useState([]) // TODO save to session storage
   const [gameState, setGameState] = useState(true) // TODO save to session storage
-  const [guessesLeft, setGuessesLeft] = useState(maxChances)
+  const [guessesLeft, setGuessesLeft] = useState(getGuessesLeft)
 
   const pickWord = () => {
     const randomIndex = Math.floor(Math.random() * fourLetterWords.length)
@@ -31,24 +40,49 @@ function App() {
   // on page mount
   useEffect(() => {
     // check session storage
-    let sessionSecret = sessionStorage.getItem("secret");
-    console.log({sessionSecret})
+    let sessionSecret = sessionStorage.getItem("secret")
+    let sessionGuessesLeft = JSON.parse(sessionStorage.getItem("guessesLeft"))
+    // console.log({sessionSecret})
     if (!sessionSecret || sessionSecret === "") {
       setSecret(pickWord())
+    }
+    if (sessionGuessesLeft) {
+      setGuessesLeft(JSON.parse(sessionGuessesLeft))
     }
 
     inputRef.current.focus()
   }, [])
-  
+
+  // handle session storage
   useEffect(() => {
-    let sessionSecret = sessionStorage.getItem("secret");
-    if(!sessionSecret) {
+    let sessionSecret = sessionStorage.getItem("secret")
+    let sessionGuessList = sessionStorage.getItem("guessList")
+    let sessionGuessesLeft = sessionStorage.getItem("guessesLeft")
+
+    console.log(sessionSecret, sessionGuessList, sessionGuessesLeft)
+
+    if (!sessionSecret) {
       sessionStorage.setItem("secret", `${secret}`);
     } else {
       setSecret(sessionSecret)
     }
-    console.log(sessionSecret)
-  },[secret])
+
+    console.log(guessesLeft)
+
+    sessionStorage.setItem("guessesLeft", `${guessesLeft}`)
+
+    // if(sessionGuessList === null) {
+    //   sessionStorage.setItem("guessList", JSON.stringify(guessList))
+    // } else {
+    //   setGuessList(JSON.parse(sessionGuessList))
+    // }
+
+    // if(!sessionGuessesLeft) {
+    //   sessionStorage.setItem("guessesLeft", JSON.stringify(guessesLeft))
+    // } else {
+    //   setGuessList(JSON.parse(sessionGuessesLeft))
+    // }
+  }, [secret, guessesLeft, guessList])
 
   const resetRef = useRef(null)
   // handle focus shift based on game state
@@ -133,11 +167,19 @@ function App() {
 
 
   const updateList = () => {
+    let sessionGuessList = sessionStorage.getItem("guessList")
+    let sessionGuessesLeft = sessionStorage.getItem("guessesLeft")
+
     let gameScore = compareWords(secret, guess)
     // adding a guess to the list
     if (gameState && guessList.length < maxChances) {
+      // if(!sessionGuessList) {
       setGuessList(guessList.concat({ word: guess, score: gameScore }))
+      // sessionStorage.setItem("guessList", guessList)
+      // }
+      // if (!sessionGuessesLeft) {
       setGuessesLeft(guessesLeft - 1)
+      // }
     }
     // end game if max guesses are guessed
     // add one to length to get ahead of state synch
